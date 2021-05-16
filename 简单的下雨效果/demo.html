@@ -25,10 +25,8 @@
                     position: absolute;
                     top: 0;
                     width: 5px;
-                    /* padding: 0 5px; */
                     height: 5px;
                     background: radial-gradient(#8fd4fc, #52b1f2, #0599fc);
-                    background-clip: content-box;
                     border-radius: 5000px;
                     transform: rotateY(45deg);
                     animation: raindrop .8s;
@@ -152,8 +150,8 @@
 
 
             window.onresize = function onresize(){
-                let clientWidth = document.body.clientWidth;
-                let clientHeight = document.body.clientHeight;
+                clientWidth = document.body.clientWidth;
+                clientHeight = document.body.clientHeight;
             }
         </script>
     </head>

@@ -44,6 +44,6 @@ window.onload = function onload(){
 
 
 window.onresize = function onresize(){
-    let clientWidth = document.body.clientWidth;
-    let clientHeight = document.body.clientHeight;
+    clientWidth = document.body.clientWidth;
+    clientHeight = document.body.clientHeight;
 }
