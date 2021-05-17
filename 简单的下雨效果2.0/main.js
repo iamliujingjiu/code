@@ -14,7 +14,7 @@ window.onload = function onload(){
                 el.style.left = left;
                 rain.appendChild(el);
 
-                let time = parseInt(Math.random() * 3500, 10);
+                let time = parseInt(Math.random() * 350, 10);
 
                 setTimeout(() => {
                     rain.removeChild(el);
@@ -22,16 +22,16 @@ window.onload = function onload(){
                     let newEl = document.createElement('div');
                     newEl.setAttribute('class', 'ripple');
                     newEl.style.left = left;
-                    newEl.style.top = parseInt(clientHeight / 100 * 50 + (time / 3500 * (clientHeight / 100 * 50)), 10) + 'px';
+                    newEl.style.top = parseInt(clientHeight / 100 * 50 + (time / 350 * (clientHeight / 100 * 50)), 10) + 'px';
                     rain.appendChild(newEl);
 
                     setTimeout(() => {
                         rain.removeChild(newEl);
-                    }, 6000)
-                }, 4000 + time, 10)
+                    }, 600)
+                }, 400 + time, 10)
             }
 
-            // dorpRain();
+            dorpRain();
         }, parseInt(10 + Math.random() * 10, 10)) 
     }
     dorpRain();
