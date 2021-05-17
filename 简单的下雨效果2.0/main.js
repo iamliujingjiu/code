@@ -37,7 +37,6 @@ window.onload = function onload(){
     dorpRain();
 }
 
-
 window.onresize = function onresize(){
     clientWidth = document.body.clientWidth;
     clientHeight = document.body.clientHeight;

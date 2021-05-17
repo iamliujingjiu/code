@@ -22,10 +22,6 @@ body {
     height: 5px;
     background: radial-gradient(#8fd4fc, #52b1f2, #0599fc);
     border-radius: 5000px;
-    /* sin45° / sin90°  约等于 71% 
-       translateX是针对元素宽度实现的
-       rotateY(45deg)后 元素的高度变为 sin45° * 设置的高度 
-       要达到rotateY(45deg)前 -50%的效果 需要将 -50% * 100% / 71% 约等于 -70% */
     transform: rotateY(45deg) translate(-70%, -50%);
     animation: raindrop .8s;
 }
@@ -36,16 +32,8 @@ body {
     border: 2px solid #8fd4fc;
     border-radius: 5000px;
     background: rgba(0, 0, 0, 0);
-    /* sin15° / sin90°  约等于 26% */
-    /* translateY是针对元素高度实现的 
-    由于rotateX(75deg)后 元素的高度变为 sin15° * 设置的高度 
-    要达到rotateX(75deg)前-50%的效果 需要将 -50% * 100% / 26% 约等于 -200% */
-    transform: rotateX(75deg) translate(-50%, -200%);
+    transform: rotateX(75deg) translate(-50%, -192%);
     animation: ripple .6s;
-    /* left: 50%;
-    top: 60%;
-    width: 200px;
-    height: 200px;*/
 } 
 
 @keyframes raindrop {
