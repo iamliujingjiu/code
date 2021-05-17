@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="charset" content="utf-8"/>
+        <title>简单的下雨效果2.0</title>
+        <style type="text/css">
+        body {
+            width: 100%;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+
+        #rain {
+            position: relative;
+            height: 100%;
+            overflow: hidden;
+            background: linear-gradient(#333,#999 ,#1f4794);
+            background-repeat: no-repeat;
+            background-size: 100% 100%;
+        }
+
+        .raindrop {
+            display: inline-block;
+            position: absolute;
+            top: 0;
+            width: 5px;
+            height: 5px;
+            background: radial-gradient(#8fd4fc, #52b1f2, #0599fc);
+            border-radius: 5000px;
+            transform: rotateY(45deg) translate(-70%, -50%);
+            animation: raindrop .8s;
+        }
+
+        .ripple {
+            display: inline-block;
+            position: absolute;
+            border: 2px solid #8fd4fc;
+            border-radius: 5000px;
+            background: rgba(0, 0, 0, 0);
+            transform: rotateX(75deg) translate(-50%, -200%);
+            animation: ripple .6s;
+        } 
+
+        @keyframes raindrop {
+            0% {top:5%;}
+            10% {top:10%;}
+            20% {top:20%;}
+            30% {top:30%;}
+            40% {top:40%;}
+            50% {top:50%;}
+            60% {top:60%;}
+            70% {top:70%;}
+            80% {top:80%;}
+            90% {top:90%;}
+            100% {top:95%;}
+        }
+
+        @keyframes ripple {
+            0% {
+                width: 2px;
+                height: 2px;
+            }
+            10% {
+                width: 4px;
+                height: 4px;
+            }
+            20% {
+                width: 6px;
+                height: 6px;
+            }
+            30% {
+                width: 8px;
+                height: 8px;
+            }
+            40% {
+                width: 10px;
+                height: 10px;
+            }
+            50% {
+                width: 12px;
+                height: 12px;
+            }
+            60% {
+                width: 14px;
+                height: 14px;
+            }
+            70% {
+                width: 16px;
+                height: 16px;
+            }
+            80% {
+                width: 18px;
+                height: 18px;
+            }
+            90% {
+                width: 20px;
+                height: 20px;
+            }
+            100% {
+                width: 22px;
+                height: 22px;
+            }
+        }
+        </style>
+        <script type="text/javascript">
+            let clientWidth;
+            let clientHeight;
+            window.onload = function onload(){
+                let rain = document.getElementById('rain');
+                clientWidth = document.body.clientWidth;
+                clientHeight = document.body.clientHeight;
+                
+                function dorpRain(){
+                    setTimeout(() => {
+                        if(typeof clientWidth !== 'undefined' && null !== clientWidth){
+                            let el = document.createElement('div');
+                            el.setAttribute('class', 'raindrop');
+                            let left = parseInt(Math.random() * clientWidth, 10) + 'px';
+                            el.style.left = left;
+                            rain.appendChild(el);
+
+                            let time = parseInt(Math.random() * 350, 10);
+
+                            setTimeout(() => {
+                                rain.removeChild(el);
+
+                                let newEl = document.createElement('div');
+                                newEl.setAttribute('class', 'ripple');
+                                newEl.style.left = left;
+                                newEl.style.top = parseInt(clientHeight / 100 * 50 + (time / 350 * (clientHeight / 100 * 50)), 10) + 'px';
+                                rain.appendChild(newEl);
+
+                                setTimeout(() => {
+                                    rain.removeChild(newEl);
+                                }, 600)
+                            }, 400 + time, 10)
+                        }
+
+                        dorpRain();
+                    }, parseInt(10 + Math.random() * 10, 10)) 
+                }
+                dorpRain();
+            }
+
+            window.onresize = function onresize(){
+                clientWidth = document.body.clientWidth;
+                clientHeight = document.body.clientHeight;
+            }
+        </script>
+    </head>
+
+    <body>
+        <div id="rain"></div>
+    </body>
+</html>
