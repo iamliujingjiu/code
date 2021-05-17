@@ -1,0 +1,110 @@
+body {
+    width: 100%;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+}
+
+#rain {
+    position: relative;
+    height: 100%;
+    overflow: hidden;
+    background: linear-gradient(#333,#999 ,#1f4794);
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+}
+
+.raindrop {
+    display: inline-block;
+    position: absolute;
+    top: 0;
+    width: 5px;
+    height: 5px;
+    background: radial-gradient(#8fd4fc, #52b1f2, #0599fc);
+    border-radius: 5000px;
+    /* sin45° / sin90°  约等于 71% 
+       translateX是针对元素宽度实现的
+       rotateY(45deg)后 元素的高度变为 sin45° * 设置的高度 
+       要达到rotateY(45deg)前 -50%的效果 需要将 -50% * 100% / 71% 约等于 -70% */
+    transform: rotateY(45deg) translate(-70%, -50%);
+    animation: raindrop 8s;
+}
+
+.ripple {
+    display: inline-block;
+    position: absolute;
+    border: 2px solid #8fd4fc;
+    border-radius: 5000px;
+    background: rgba(0, 0, 0, 0);
+    /* sin15° / sin90°  约等于 26% */
+    /* translateY是针对元素高度实现的 
+    由于rotateX(75deg)后 元素的高度变为 sin15° * 设置的高度 
+    要达到rotateX(75deg)前-50%的效果 需要将 -50% * 100% / 26% 约等于 -200% */
+    transform: rotateX(75deg) translate(-50%, -200%);
+    animation: ripple 6s;
+    /* left: 50%;
+    top: 60%;
+    width: 200px;
+    height: 200px;*/
+} 
+
+@keyframes raindrop {
+    0% {top:5%;}
+    10% {top:10%;}
+    20% {top:20%;}
+    30% {top:30%;}
+    40% {top:40%;}
+    50% {top:50%;}
+    60% {top:60%;}
+    70% {top:70%;}
+    80% {top:80%;}
+    90% {top:90%;}
+    100% {top:95%;}
+}
+
+@keyframes ripple {
+    0% {
+        width: 20px;
+        height: 20px;
+    }
+    10% {
+        width: 40px;
+        height: 40px;
+    }
+    20% {
+        width: 60px;
+        height: 60px;
+    }
+    30% {
+        width: 80px;
+        height: 80px;
+    }
+    40% {
+        width: 100px;
+        height: 100px;
+    }
+    50% {
+        width: 120px;
+        height: 120px;
+    }
+    60% {
+        width: 140px;
+        height: 140px;
+    }
+    70% {
+        width: 160px;
+        height: 160px;
+    }
+    80% {
+        width: 180px;
+        height: 180px;
+    }
+    90% {
+        width: 200px;
+        height: 200px;
+    }
+    100% {
+        width: 220px;
+        height: 220px;
+    }
+}
