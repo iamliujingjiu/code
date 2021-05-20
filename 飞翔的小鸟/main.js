@@ -2,14 +2,10 @@
 function game(){
     
     var mCanvas, mContext,
-        bgCanvas, bgCanvasContext,
         cacheCanvas, cacheCanvasContext,
 
         mCanvasX, mCanvasY,
         mCanvasWidth, mCanvasHeight,
-        
-        bgCanvasX, bgCanvasY,
-        bgCanvasWidth, bgCanvasHeight,
         
         cacheCanvasX, cacheCanvasY,
         cacheCanvasWidth, cacheCanvasHeight,
@@ -43,31 +39,28 @@ function game(){
         
         score = 0,//计分器
         
-        time = 0;//计时器
+        time = 0,//计时器
 
+        running = false;
 
     function onInit(){
+        running = true;
+
         mCanvas = document.getElementById('canvas');
         mContext = mCanvas && mCanvas.getContext && mCanvas.getContext('2d');
         
-        bgCanvas = document.createElement("canvas");
-        bgCanvasContext = bgCanvas && bgCanvas.getContext && bgCanvas.getContext('2d');
-
         cacheCanvas = document.createElement("canvas");
         cacheCanvasContext = cacheCanvas && cacheCanvas.getContext && cacheCanvas.getContext('2d');
         
         //背景的初始化
-        mCanvasX = bgCanvasX = cacheCanvasX = 0;
-        mCanvasY = bgCanvasY = cacheCanvasY = 0;
-        mCanvasWidth = bgCanvasWidth = cacheCanvasWidth = 288;
-        mCanvasHeight = bgCanvasHeight = cacheCanvasHeight = 517;
-        debugger
+        mCanvasX = cacheCanvasX = 0;
+        mCanvasY = cacheCanvasY = 0;
+        mCanvasWidth = cacheCanvasWidth = 288;
+        mCanvasHeight = cacheCanvasHeight = 517;
+        
         //画板初始化宽高
         mCanvas.width = mCanvasWidth;
         mCanvas.height = mCanvasHeight;
-
-        bgCanvas.width = bgCanvasWidth;
-        bgCanvas.height = bgCanvasHeight;
 
         cacheCanvas.width = cacheCanvasWidth;
         cacheCanvas.height = cacheCanvasHeight;
@@ -105,8 +98,8 @@ function game(){
         birdHeight = 24;
 
         speedX = 1;//X轴 飞翔的速度
-        speedDownY = 1;//Y轴 下落的速度
-        speedUpY = 15;//Y轴 上升的速度
+        speedDownY = 3;//Y轴 下落的速度
+        speedUpY = 30;//Y轴 上升的速度
         addUpY = 0;//Y轴一次重绘上升的高度
         
         switch(Math.floor(Math.random() * 3)){
@@ -160,11 +153,13 @@ function game(){
             addUpY -= speedUpY;
         }
 
-
         onDraw();
     }
 
     function onDraw(){
+        if(!running){
+            return;
+        }
         time += 1;
         if(time >= 29999){
             time = 0;
@@ -178,35 +173,46 @@ function game(){
                 return;
             }
             
-            //碰撞检测
-            for(let pipe of pipeList){
-                let add = 0;
-                // 左侧撞到柱子
-                if((birdX + add >= pipe.X && birdX + add <= pipe.X + pipe.W)
-                    // 右侧撞到柱子
-                    || (birdX + add + birdWidth >= pipe.X && birdX + add + birdWidth <= pipe.X + pipe.W)){
-                    // 鸟右上方的点撞到上方的柱子
-                    if(birdY + add >= 0 && birdY + add < pipe.H + pipe.downY){
-                        debugger
-                        onFail('撞到上面的柱子撞死了');
-                        return;
-                    // 鸟右下方的点撞到下方的柱子 
-                    }else if(birdY + birdHeight >= pipe.upY && birdY + birdHeight <= landY){
-                        debugger
-                        onFail('撞到下面的柱子撞死了');
-                        return;
+            setTimeout(function(){
+                //碰撞检测
+                for(let pipe of pipeList){
+
+                    // let X = birdX + birdWidth / 2;
+                    // let Y = birdY + birdHeight / 2;
+                    // // 判断中心点
+                    // if(X >= pipe.X && X <= pipe.X + pipe.W && (Y <= pipe.H + pipe.downY || Y >= pipe.upY )){
+                    //     onFail('撞到柱子撞死了');
+                    // }
+
+            
+                    
+                    var birdL = birdX - speedX;
+                    var birdR = birdX - speedX + birdWidth;
+                    // var birdT = birdY + speedUpY;
+                    var birdT = birdY;
+                    var birdB = birdY - speedDownY + birdHeight;
+
+                    if((birdL >= pipe.X && birdL <= pipe.X + pipe.W)
+                        // 右侧撞到柱子
+                        || (birdR >= pipe.X && birdR <= pipe.X + pipe.W)){
+                        // 鸟右上方的点撞到上方的柱子
+                        if(birdT >= 0 && birdT <= pipe.H + pipe.downY){
+                            onFail('撞到上面的柱子撞死了');
+                            return;
+                        // 鸟右下方的点撞到下方的柱子 
+                        }else if(birdB >= pipe.upY && birdB <= landY){
+                            onFail('撞到下面的柱子撞死了');
+                            return;
+                        }
                     }
                 }
-            }
+            }, 25)
 
-            if(bgCanvas){
 
-            }
             bgImg.onload = function(){
-                cacheCanvasContext.drawImage(bgImg, bgCanvasX, bgCanvasY, bgCanvasWidth, bgCanvasHeight);
+                cacheCanvasContext.drawImage(bgImg, cacheCanvasX, cacheCanvasY, cacheCanvasWidth, cacheCanvasHeight);
             }
             bgImg.src = bgFilePath;
-
 
             for(let pipe of pipeList){
                 let pipeDownImg = new Image();
@@ -225,14 +231,13 @@ function game(){
 
                 pipe.X -= speedX;
                 
-                if(pipe.X === birdX){
-                    score += 1;
-                }
-
+                
                 if(pipe.X + pipe.W <= 0){
-                    
-                    let x = parseInt(pipeLength * mCanvasWidth / 2 - pipeImgWidth, 10);
-                    let downY = parseInt(Math.random() * (pipeMaxHeight - pipeMinHeight) + pipeMinHeight, 10) - pipeImgHeight;
+
+                    score += 1;
+
+                    let x =  Math.ceil(pipeLength * mCanvasWidth / 2 - pipeImgWidth);
+                    let downY =  Math.ceil(Math.random() * (pipeMaxHeight - pipeMinHeight) + pipeMinHeight) - pipeImgHeight;
                     let upY = downY + pipeImgHeight + pipeImgIntervalHeight;
 
                     pipe.X = x;
@@ -299,10 +304,13 @@ function game(){
     }
 
     function onFail(val){
-        alert(val);
+        running = false;
+        // 等到动画执行完毕后再调用fail的逻辑
+        setTimeout(function(){
+            alert(val);
+        }, 25)
     }
     
-    debugger
     onInit();
 }
 
