@@ -1,8 +1,9 @@
+'use strict'
 function game(){
     
     var mCanvas, mContext,
-        bgCanvas, bgCanvas,
-        cacheCanvas, cacheCanvas,
+        bgCanvas, bgCanvasContext,
+        cacheCanvas, cacheCanvasContext,
 
         mCanvasX, mCanvasY,
         mCanvasWidth, mCanvasHeight,
@@ -50,17 +51,17 @@ function game(){
         mContext = mCanvas && mCanvas.getContext && mCanvas.getContext('2d');
         
         bgCanvas = document.createElement("canvas");
-        bgContext = bgCanvas && bgCanvas.getContext && bgCanvas.getContext('2d');
+        bgCanvasContext = bgCanvas && bgCanvas.getContext && bgCanvas.getContext('2d');
 
         cacheCanvas = document.createElement("canvas");
-        cacheContext = cacheCanvas && cacheCanvas.getContext && cacheCanvas.getContext('2d');
+        cacheCanvasContext = cacheCanvas && cacheCanvas.getContext && cacheCanvas.getContext('2d');
         
         //背景的初始化
         mCanvasX = bgCanvasX = cacheCanvasX = 0;
         mCanvasY = bgCanvasY = cacheCanvasY = 0;
-        mCanvasWidth = bgCanvasWidth = cacheWidth = 288;
-        mCanvasHeight = bgCanvasHeight = cacheHeight = 517;
-
+        mCanvasWidth = bgCanvasWidth = cacheCanvasWidth = 288;
+        mCanvasHeight = bgCanvasHeight = cacheCanvasHeight = 517;
+        debugger
         //画板初始化宽高
         mCanvas.width = mCanvasWidth;
         mCanvas.height = mCanvasHeight;
@@ -72,14 +73,14 @@ function game(){
         cacheCanvas.height = cacheCanvasHeight;
         
         //随机数选择背景图片
-        bgFilePath = Math.floor(random = Math.random() * 2) ? './assets/bg_day.png' : './assets/bg_night.png';
+        bgFilePath = Math.floor(random = Math.floor(Math.random() * 2)) ? './assets/bg_day.png' : './assets/bg_night.png';
         
-        backgroundImg = new Image();
+        bgImg = new Image();
 
-        landWidth = cacheWidth;
+        landWidth = cacheCanvasWidth;
         landHeight = 112;
         landX = cacheCanvasX;
-        landY = cacheHeight - landHeight;
+        landY = cacheCanvasHeight - landHeight;
 
         landFilePath = './assets/land.png';
         
@@ -129,7 +130,7 @@ function game(){
         pipeImgIntervalHeight = 115;//这个可以改动
         pipeMinHeight = 80;//这个可以改动
         pipeMaxHeight = landY - pipeImgIntervalHeight - pipeMinHeight;
-
+ 
         if(random){
             pipeDownImgPath = './assets/pipe_down.png';
             pipeUpImgPath = './assets/pipe_up.png';
@@ -142,10 +143,10 @@ function game(){
         pipeLength = 3;
         pipeList = new Array(pipeLength);
         for(let index = 0;index < pipeLength;index++){
-            let x = Math.ceil(cacheWidth + index * cacheWidth / 2);
+            let x = Math.ceil(cacheCanvasWidth + index * cacheCanvasWidth / 2);
             let downY = Math.ceil(Math.random() * (pipeMaxHeight - pipeMinHeight) + pipeMinHeight) - pipeImgHeight;
             let upY = downY + pipeImgHeight + pipeImgIntervalHeight;
-            pipeImgList[index] = {
+            pipeList[index] = {
                 X : x,
                 downY : downY,
                 upY : upY,
@@ -169,7 +170,7 @@ function game(){
             time = 0;
         }
             
-        if(cacheContext){
+        if(cacheCanvasContext){
             
             //触地
             if(birdY + birdHeight >= landY){
@@ -178,7 +179,7 @@ function game(){
             }
             
             //碰撞检测
-            for(let pipe of pipeImgList){
+            for(let pipe of pipeList){
                 let add = 0;
                 // 左侧撞到柱子
                 if((birdX + add >= pipe.X && birdX + add <= pipe.X + pipe.W)
@@ -198,22 +199,25 @@ function game(){
                 }
             }
 
-            backgroundImg.onload = function(){
-                cacheContext.drawImage(backgroundImg, canvasX, canvasY, canvasWidth, canvasHeight);
+            if(bgCanvas){
+
             }
-            backgroundImg.src = backgroundImgPath;
+            bgImg.onload = function(){
+                cacheCanvasContext.drawImage(bgImg, bgCanvasX, bgCanvasY, bgCanvasWidth, bgCanvasHeight);
+            }
+            bgImg.src = bgFilePath;
 
 
-            for(let pipe of pipeImgList){
+            for(let pipe of pipeList){
                 let pipeDownImg = new Image();
                 pipeDownImg.onload = function(){
-                    cacheContext.drawImage(pipeDownImg, pipe.X, pipe.downY, pipe.W, pipe.H);
+                    cacheCanvasContext.drawImage(pipeDownImg, pipe.X, pipe.downY, pipe.W, pipe.H);
                 }
                 pipeDownImg.src = pipeDownImgPath;
 
                 let pipeUpImg = new Image();
                 pipeUpImg.onload = function(){
-                    cacheContext.drawImage(pipeUpImg, pipe.X, pipe.upY, pipe.W, pipe.H);
+                    cacheCanvasContext.drawImage(pipeUpImg, pipe.X, pipe.upY, pipe.W, pipe.H);
                 }
                 pipeUpImg.src = pipeUpImgPath;
                 
@@ -227,7 +231,7 @@ function game(){
 
                 if(pipe.X + pipe.W <= 0){
                     
-                    let x = parseInt(PIPELENGTH * canvasWidth / 2 - pipeImgWidth, 10);
+                    let x = parseInt(pipeLength * mCanvasWidth / 2 - pipeImgWidth, 10);
                     let downY = parseInt(Math.random() * (pipeMaxHeight - pipeMinHeight) + pipeMinHeight, 10) - pipeImgHeight;
                     let upY = downY + pipeImgHeight + pipeImgIntervalHeight;
 
@@ -249,14 +253,11 @@ function game(){
             
             birdY += speedDownY;
             birdImg.onload = function(){
-                // cacheContext.fillRect(birdX, birdY, birdWidth, birdHeight);
-                cacheContext.drawImage(birdImg, birdX, birdY, birdWidth, birdHeight);
+                // cacheCanvasContext.fillRect(birdX, birdY, birdWidth, birdHeight);
+                cacheCanvasContext.drawImage(birdImg, birdX, birdY, birdWidth, birdHeight);
             }
 
-            let imgPath = './assets/bird2_'+ (Math.abs(parseInt(time, 10)) % 3) +'.png';
-            birdImg.src = imgPath;
-
-            
+            birdImg.src = birdFilePathList[time % 3];
         
             for(let land of landList){
                 let landImg = new Image();
@@ -264,25 +265,25 @@ function game(){
                 land.X -= speedX;
 
                 if(land.X + land.W <= landX){
-                    let x = parseInt((LANDLENGTH - 1) * landWidth, 10);
+                    let x = parseInt((landLength - 1) * landWidth, 10);
                     land.X = x;
                 }
 
                 landImg.onload = function(){
-                    cacheContext.drawImage(landImg, land.X, land.Y, land.W, land.H);
+                    cacheCanvasContext.drawImage(landImg, land.X, land.Y, land.W, land.H);
                 }
                 landImg.src = landFilePath;
                 
             }
             
-            cacheContext.font = "32px bold 黑体";
-            cacheContext.fillStyle = "white";
-            cacheContext.textAlign = "center";
-            cacheContext.textBaseline = "middle";
-            cacheContext.fillText(score, canvasWidth / 2, landY / 2);
+            cacheCanvasContext.font = "32px bold 黑体";
+            cacheCanvasContext.fillStyle = "white";
+            cacheCanvasContext.textAlign = "center";
+            cacheCanvasContext.textBaseline = "middle";
+            cacheCanvasContext.fillText(score, cacheCanvasWidth / 2, landY / 2);
             
-            if(context){
-                context.drawImage(cacheCanvas, canvasX, canvasY, canvasWidth, canvasHeight);
+            if(mContext){
+                mContext.drawImage(cacheCanvas, mCanvasX, mCanvasY, mCanvasWidth, mCanvasHeight);
             }
 
             requestAnimationFrame(onDraw);
@@ -301,7 +302,7 @@ function game(){
         alert(val);
     }
     
-
+    debugger
     onInit();
 }
 
