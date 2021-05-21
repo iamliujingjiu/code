@@ -242,9 +242,9 @@ function onGameInitialization(){
         //     console.log('touchend');
         // })
 
-        mCanvas.addEventListener('click', function(event) {
-            alert('开始');
-        })
+        // mCanvas.addEventListener('click', function(event) {
+        //     alert('开始');
+        // })
 
     }
 
@@ -277,7 +277,7 @@ function onGameInitialization(){
         initScore();
         initEvent();
 
-        onDrawLaunchPage();
+        onDraw();
     }
 
     function drawBg(){
@@ -404,14 +404,15 @@ function onGameInitialization(){
         running = false;
         // 确保动画执行完毕
         setTimeout(function(){
-            alert(val);
+            // alert(val);
+            onDrawGameOverPage();
         }, 25)
     }
     
     onInit();
 
     //启动页面的绘制
-    function onDrawLaunchPage(){
+    function onDrawGameLaunchPage(){
         mTime += 1;
         if(mTime >= 29999){
             mTime = 0;
@@ -424,7 +425,26 @@ function onGameInitialization(){
         onDrawTitle();
         onDrawStartBt();
         copyCache();
-        requestAnimationFrame(onDrawLaunchPage);
+        requestAnimationFrame(onDrawGameLaunchPage);
+    }
+
+    function onDrawGameStartPage(){
+        
+    }
+
+    function onDrawGameOverPage(){
+        if(birdY + birdHeight > landY){
+            birdY = landY - birdHeight;
+        }else{
+            birdY += 30;
+            drawBg();
+            drawPipe();
+            drawBird();
+            copyCache();
+        }
+
+        requestAnimationFrame(onDrawGameOverPage);
+
     }
 
     function onInitTitle(){
