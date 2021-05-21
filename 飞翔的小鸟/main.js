@@ -215,9 +215,19 @@ function onGameInitialization(){
 
     function initEvent(){
         //监听点击事件
-        window.onclick = function(event) {
+        window.addEventListener('click', function(event) {
             addUpY += speedUpY;
-        }
+        })
+
+        window.addEventListener('touchstart',function(event){
+            addUpY += speedUpY;
+        })
+        // window.addEventListener('touchmove',function(e){
+        //     console.log('touchmove');
+        // })
+        // window.addEventListener('touchend',function(e){
+        //     console.log('touchend');
+        // })
     }
 
     function onInit(){
