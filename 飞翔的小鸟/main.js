@@ -1,5 +1,5 @@
 'use strict'
-function game(){
+function onGameInitialization(){
     
     var mCanvas, mContext,
         cacheCanvas, cacheCanvasContext,
@@ -39,11 +39,12 @@ function game(){
         pipeLength,
         pipeList,
 
-        random,//记录随机数 白天或者黑夜
+        mRandom,//记录随机数 白天或者黑夜
+        mTime = 0,//计时器
+        mScore = 0,//计分器
         
-        score = 0,//计分器
-        
-        time = 0,//计时器
+
+        mFont, mFillStyle, mTextAlign, mTextBaseline,
 
         running = false;
 
@@ -55,7 +56,7 @@ function game(){
         bgCanvas.height = mCanvasHeight;
 
         //随机数选择背景图片
-        bgFilePath = Math.floor(random = Math.floor(Math.random() * 2)) ? './assets/bg_day.png' : './assets/bg_night.png';
+        bgFilePath = Math.floor(mRandom = Math.floor(Math.random() * 2)) ? './assets/bg_day.png' : './assets/bg_night.png';
         
         bgImg = new Image();
 
@@ -101,7 +102,6 @@ function game(){
                 H : landHeight,
             };
         }
-
         
     }
 
@@ -123,7 +123,7 @@ function game(){
         pipeMinHeight = 80;//这个可以改动
         pipeMaxHeight = landY - pipeImgIntervalHeight - pipeMinHeight;
  
-        if(random){
+        if(mRandom){
             pipeDownImgPath = './assets/pipe_down.png';
             pipeUpImgPath = './assets/pipe_up.png';
         }else{
@@ -206,6 +206,13 @@ function game(){
 
     }
 
+    function initScore(){
+        mFont = "32px bold 黑体";
+        mFillStyle = "white";
+        mTextAlign = "center";
+        mTextBaseline = "middle";
+    }
+
     function initEvent(){
         //监听点击事件
         window.onclick = function(event) {
@@ -221,19 +228,12 @@ function game(){
         
         cacheCanvas = document.createElement("canvas");
         cacheCanvasContext = cacheCanvas && cacheCanvas.getContext && cacheCanvas.getContext('2d');
-        
-        cacheCanvasContext.font = "32px bold 黑体";
-        cacheCanvasContext.fillStyle = "white";
-        cacheCanvasContext.textAlign = "center";
-        cacheCanvasContext.textBaseline = "middle";
 
-        //背景的初始化
         mCanvasX = 0;
         mCanvasY = 0;
         mCanvasWidth = 288;
         mCanvasHeight = 517;
 
-         //画板初始化宽高
         mCanvas.width = mCanvasWidth;
         mCanvas.height = mCanvasHeight;
 
@@ -244,9 +244,104 @@ function game(){
         initLand();
         initPipe();
         initBrid();
+        initScore();
         initEvent();
 
         onDraw();
+    }
+
+    function drawBg(){
+        bgCanvas ? cacheCanvasContext.drawImage(bgCanvas, mCanvasX, mCanvasY, mCanvasWidth, mCanvasHeight) : '';
+    }
+    
+    function drawPipe(){
+        for(var index = 0, length = pipeList.length;index < length;index++){
+            var pipeItem = pipeList[index];
+            void (function(pipe){
+                pipe.X -= speedX;
+                pipeDownCanvas ? cacheCanvasContext.drawImage(pipeDownCanvas, pipe.X, pipe.downY, pipe.W, pipe.H) : '';
+                pipeUpCanvas ? cacheCanvasContext.drawImage(pipeUpCanvas, pipe.X, pipe.upY, pipe.W, pipe.H) : '';
+                if(pipe.X + pipe.W <= 0){
+                    mScore += 1;
+                    var x =  Math.ceil(pipeLength * mCanvasWidth / 2 - pipeImgWidth);
+                    var downY =  Math.ceil(Math.random() * (pipeMaxHeight - pipeMinHeight) + pipeMinHeight) - pipeImgHeight;
+                    var upY = downY + pipeImgHeight + pipeImgIntervalHeight;
+                    pipe.X = x;
+                    pipe.downY = downY;
+                    pipe.upY = upY;
+                    pipe.W = pipeImgWidth;
+                    pipe.H = pipeImgHeight;
+                    
+                }
+            }(pipeItem))
+        }
+    }
+
+    function drawLand(){
+        for(var index = 0, length = landList.length;index < length;index++){
+            var landItem =  landList[index];
+            void (function(land){
+                land.X -= speedX;
+
+                if(land.X + land.W <= landX){
+                    var x = parseInt((landLength - 1) * landWidth, 10);
+                    land.X = x;
+                }
+
+                landCanvas ? cacheCanvasContext.drawImage(landCanvas, land.X, land.Y, land.W, land.H) : '';
+            }(landItem))
+        }
+    }
+
+    function drawBird(){
+        birdY += addUpY;
+        addUpY = 0;
+        birdY < 0 ? birdY = 0 : '';
+        birdY += speedDownY;
+        bridCanvasList && bridCanvasList[mTime % 3] ? cacheCanvasContext.drawImage(bridCanvasList[mTime % 3], birdX, birdY, birdWidth, birdHeight) : '';
+    }
+
+    function drawScore(){
+        cacheCanvasContext.font = mFont;
+        cacheCanvasContext.fillStyle = mFillStyle;
+        cacheCanvasContext.textAlign = mTextAlign;
+        cacheCanvasContext.textBaseline = mTextBaseline;
+        cacheCanvasContext.fillText(mScore, mCanvasWidth / 2, landY / 2);
+        
+    }
+
+    function copyCache(){
+        mContext ? mContext.drawImage(cacheCanvas, mCanvasX, mCanvasY, mCanvasWidth, mCanvasHeight) : '';
+    }
+
+    function collisionDetection(){
+        var birdL = birdX;
+        var birdR = birdX + birdWidth;
+        var birdT = birdY;
+        var birdB = birdY + birdHeight;
+
+        //触地
+        if(birdB > landY){
+            onFail('掉地上摔死了');
+        }
+        
+        //碰撞检测
+        for(var index = 0, length = pipeList.length;index < length;index++){
+            var pipeItem = pipeList[index];
+            void (function(pipe){
+                if((birdL > pipe.X && birdL < pipe.X + pipe.W)
+                    // 右侧撞到柱子
+                    || (birdR > pipe.X && birdR < pipe.X + pipe.W)){
+                    // 鸟右上方的点撞到上方的柱子
+                    if(birdT > 0 && birdT < pipe.H + pipe.downY){
+                        onFail('撞到上面的柱子撞死了');
+                    // 鸟右下方的点撞到下方的柱子 
+                    }else if(birdB > pipe.upY && birdB < landY){
+                        onFail('撞到下面的柱子撞死了');
+                    }
+                }
+            }(pipeItem))
+        }
     }
 
     function onDraw(){
@@ -254,109 +349,23 @@ function game(){
             return;
         }
 
-        time += 1;
-        if(time >= 29999){
-            time = 0;
+        mTime += 1;
+        if(mTime >= 29999){
+            mTime = 0;
         }
             
         if(cacheCanvasContext){
-            //先画背景
-            bgCanvas ? cacheCanvasContext.drawImage(bgCanvas, mCanvasX, mCanvasY, mCanvasWidth, mCanvasHeight) : '';
-            
-            for(var index = 0, length = pipeList.length;index < length;index++){
-                var pipeItem = pipeList[index];
-                void (function(pipe){
-                    pipe.X -= speedX;
-
-                    pipeDownCanvas ? cacheCanvasContext.drawImage(pipeDownCanvas, pipe.X, pipe.downY, pipe.W, pipe.H) : '';
-                    pipeUpCanvas ? cacheCanvasContext.drawImage(pipeUpCanvas, pipe.X, pipe.upY, pipe.W, pipe.H) : '';
-
-                    if(pipe.X + pipe.W <= 0){
-
-                        score += 1;
-
-                        var x =  Math.ceil(pipeLength * mCanvasWidth / 2 - pipeImgWidth);
-                        var downY =  Math.ceil(Math.random() * (pipeMaxHeight - pipeMinHeight) + pipeMinHeight) - pipeImgHeight;
-                        var upY = downY + pipeImgHeight + pipeImgIntervalHeight;
-
-                        pipe.X = x;
-                        pipe.downY = downY;
-                        pipe.upY = upY;
-                        pipe.W = pipeImgWidth;
-                        pipe.H = pipeImgHeight;
-                        
-                    }
-                }(pipeItem))
-            }
-            
-            birdY += addUpY;
-            addUpY = 0;
-            birdY < 0 ? birdY = 0 : '';
-            birdY += speedDownY;
-            
-            bridCanvasList && bridCanvasList[time % 3] ? cacheCanvasContext.drawImage(bridCanvasList[time % 3], birdX, birdY, birdWidth, birdHeight) : '';
-        
-            for(var index = 0, length = landList.length;index < length;index++){
-                var landItem =  landList[index];
-                void (function(land){
-                    land.X -= speedX;
-
-                    if(land.X + land.W <= landX){
-                        var x = parseInt((landLength - 1) * landWidth, 10);
-                        land.X = x;
-                    }
-
-                    landCanvas ? cacheCanvasContext.drawImage(landCanvas, land.X, land.Y, land.W, land.H) : '';
-                }(landItem))
-            }
-            
-            cacheCanvasContext.fillText(score, mCanvasWidth / 2, landY / 2);
-            
-            if(mContext){
-                mContext.drawImage(cacheCanvas, mCanvasX, mCanvasY, mCanvasWidth, mCanvasHeight);
-            }
-                
-          
-            var birdL = birdX;
-            var birdR = birdX + birdWidth;
-            var birdT = birdY;
-            var birdB = birdY + birdHeight;
-
-            //触地
-            if(birdB > landY){
-                onFail('掉地上摔死了');
-            }
-            
-            //碰撞检测
-            for(var index = 0, length = pipeList.length;index < length;index++){
-                var pipeItem = pipeList[index];
-                void (function(pipe){
-                    if((birdL > pipe.X && birdL < pipe.X + pipe.W)
-                        // 右侧撞到柱子
-                        || (birdR > pipe.X && birdR < pipe.X + pipe.W)){
-                        // 鸟右上方的点撞到上方的柱子
-                        if(birdT > 0 && birdT < pipe.H + pipe.downY){
-                            onFail('撞到上面的柱子撞死了');
-                        // 鸟右下方的点撞到下方的柱子 
-                        }else if(birdB > pipe.upY && birdB < landY){
-                            onFail('撞到下面的柱子撞死了');
-                        }
-                    }
-                }(pipeItem))
-            }
-            
+            drawBg();
+            drawPipe();
+            drawBird();
+            drawLand();
+            drawScore();
+            copyCache();
+            collisionDetection();
             requestAnimationFrame(onDraw);
         }
     }
-
-    function onStart(){
-
-    }
-
-    function onStop(){
-
-    }
-
+ 
     function onFail(val){
         running = false;
         // 确保动画执行完毕
@@ -368,4 +377,4 @@ function game(){
     onInit();
 }
 
-window.onload = game;
+window.onload = onGameInitialization;
