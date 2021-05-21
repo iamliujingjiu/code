@@ -8,6 +8,8 @@ function onGameInitialization(){
         landCanvas, landCanvasContext,
         pipeDownCanvas, pipeDownCanvasContext,
         pipeUpCanvas, pipeUpCanvasContext,
+        titleCanvas, titleCanvasContext,
+        startBtCanvas, startBtCanvasContext,
         bridCanvas, bridCanvasContext ,bridCanvasList = [],
 
         mCanvasX, mCanvasY,
@@ -34,10 +36,18 @@ function onGameInitialization(){
         pipeImgIntervalHeight,//上下管道的距离
         pipeMinHeight,//管道的最低高度
         pipeMaxHeight,//管道的最高高度
-        pipeDownImgPath, pipeDownImg,
-        pipeUpImgPath, pipeUpImg,
+        pipeDownFilePath, pipeDownImg,
+        pipeUpFilePath, pipeUpImg,
         pipeLength,
         pipeList,
+
+        titleImgX, titleImgY,
+        titleImgWidth, titleImgHeight,
+        titleImg, titleFilePath,
+
+        startBtImgX, startBtImgY,
+        startBtImgWidth, startBtImgHeight,
+        startBtImg, startBtFilePath,
 
         mRandom,//记录随机数 白天或者黑夜
         mTime = 0,//计时器
@@ -124,24 +134,24 @@ function onGameInitialization(){
         pipeMaxHeight = landY - pipeImgIntervalHeight - pipeMinHeight;
  
         if(mRandom){
-            pipeDownImgPath = './assets/pipe_down.png';
-            pipeUpImgPath = './assets/pipe_up.png';
+            pipeDownFilePath = './assets/pipe_down.png';
+            pipeUpFilePath = './assets/pipe_up.png';
         }else{
-            pipeDownImgPath = './assets/pipe2_down.png';
-            pipeUpImgPath = './assets/pipe2_up.png';
+            pipeDownFilePath = './assets/pipe2_down.png';
+            pipeUpFilePath = './assets/pipe2_up.png';
         }
 
         pipeDownImg = new Image();
         pipeDownImg.onload = function(){
             pipeDownCanvasContext.drawImage(pipeDownImg, 0, 0, pipeImgWidth, pipeImgHeight);
         }
-        pipeDownImg.src = pipeDownImgPath;
+        pipeDownImg.src = pipeDownFilePath;
 
         pipeUpImg = new Image();
         pipeUpImg.onload = function(){
             pipeUpCanvasContext.drawImage(pipeUpImg, 0, 0, pipeImgWidth, pipeImgHeight);
         }
-        pipeUpImg.src = pipeUpImgPath;
+        pipeUpImg.src = pipeUpFilePath;
 
         pipeList = new Array(pipeLength = 3);
         for(var index = 0;index < pipeLength;index++){
@@ -161,7 +171,7 @@ function onGameInitialization(){
     function initBrid(){
         //鸟的初始化
         birdX = 40;
-        birdY = landY / 2;
+        birdY = mCanvasHeight / 2;
         birdWidth = 34;
         birdHeight = 24;
 
@@ -186,21 +196,24 @@ function onGameInitialization(){
         
         for(var index = 0, length = birdFilePathList.length;index < length;index++){
             var birdFilePath = birdFilePathList[index];
-            void (function(path){
+            birdImg = new Image();
+            void (function(path, img){
                 bridCanvas = document.createElement("canvas");
                 bridCanvasContext = bridCanvas && bridCanvas.getContext && bridCanvas.getContext('2d');
                 
                 bridCanvas.width = birdWidth;
                 bridCanvas.height = birdHeight;
+                
+                img.onload = (function(canvas, context){
+                    return function(){
+                        context.drawImage(img, 0, 0, birdWidth, birdHeight);
+                        bridCanvasList.push(canvas);
+                    }
+                }(bridCanvas, bridCanvasContext))
 
-                birdImg = new Image();
-                birdImg.onload = function(){
-                    bridCanvasContext.drawImage(birdImg, 0, 0, birdWidth, birdHeight);
-                    bridCanvasList.push(bridCanvas);
-                }
-                birdImg.src = path;
+                img.src = path;
 
-            }(birdFilePath))
+            }(birdFilePath, birdImg))
             
         }
 
@@ -228,6 +241,11 @@ function onGameInitialization(){
         // window.addEventListener('touchend',function(e){
         //     console.log('touchend');
         // })
+
+        mCanvas.addEventListener('click', function(event) {
+            alert('开始');
+        })
+
     }
 
     function onInit(){
@@ -254,10 +272,12 @@ function onGameInitialization(){
         initLand();
         initPipe();
         initBrid();
+        onInitTitle();
+        onInitStartBt();
         initScore();
         initEvent();
 
-        onDraw();
+        onDrawLaunchPage();
     }
 
     function drawBg(){
@@ -304,11 +324,9 @@ function onGameInitialization(){
     }
 
     function drawBird(){
-        birdY += addUpY;
-        addUpY = 0;
-        birdY < 0 ? birdY = 0 : '';
-        birdY += speedDownY;
-        bridCanvasList && bridCanvasList[mTime % 3] ? cacheCanvasContext.drawImage(bridCanvasList[mTime % 3], birdX, birdY, birdWidth, birdHeight) : '';
+        //每隔3次绘制更换一次小鸟的图片
+        var index = Math.floor(mTime % 9 / 3);
+        bridCanvasList && bridCanvasList[index] ? cacheCanvasContext.drawImage(bridCanvasList[index], birdX, birdY, birdWidth, birdHeight) : '';
     }
 
     function drawScore(){
@@ -367,6 +385,12 @@ function onGameInitialization(){
         if(cacheCanvasContext){
             drawBg();
             drawPipe();
+
+            birdY += addUpY;
+            addUpY = 0;
+            birdY < 0 ? birdY = 0 : '';
+            birdY += speedDownY;
+
             drawBird();
             drawLand();
             drawScore();
@@ -385,6 +409,68 @@ function onGameInitialization(){
     }
     
     onInit();
+
+    //启动页面的绘制
+    function onDrawLaunchPage(){
+        mTime += 1;
+        if(mTime >= 29999){
+            mTime = 0;
+        }
+
+        drawBg();
+        birdX = (mCanvasWidth - birdWidth) / 2;
+        drawBird();
+        drawLand();
+        onDrawTitle();
+        onDrawStartBt();
+        copyCache();
+        requestAnimationFrame(onDrawLaunchPage);
+    }
+
+    function onInitTitle(){
+        titleCanvas = document.createElement("canvas");
+        titleCanvasContext = titleCanvas && titleCanvas.getContext && titleCanvas.getContext('2d');
+
+        titleCanvas.width = titleImgWidth = 178;
+        titleCanvas.height = titleImgHeight = 48;
+
+        titleImgX = (mCanvasWidth - titleImgWidth) / 2;
+        titleImgY = mCanvasHeight / 2 - titleImgHeight - birdHeight;
+        titleFilePath = './assets/title.png';
+
+        titleImg = new Image();
+        titleImg.onload = function(){
+            titleCanvasContext.drawImage(titleImg, 0, 0, titleImgWidth, titleImgHeight);
+        }
+        titleImg.src = titleFilePath;
+    }
+
+    function onDrawTitle(){
+        cacheCanvasContext ? cacheCanvasContext.drawImage(titleCanvas, titleImgX, titleImgY, titleImgWidth, titleImgHeight) : '';
+    }
+
+
+    function onInitStartBt(){
+        startBtCanvas = document.createElement("canvas");
+        startBtCanvasContext = startBtCanvas && startBtCanvas.getContext && startBtCanvas.getContext('2d');
+
+        startBtCanvas.width = startBtImgWidth = 80;
+        startBtCanvas.height = startBtImgHeight = 28;
+
+        startBtImgX = (mCanvasWidth - startBtImgWidth) / 2;
+        startBtImgY = mCanvasHeight - landHeight - startBtImgHeight - 40;
+        startBtFilePath = './assets/button_ok.png';
+
+        startBtImg = new Image();
+        startBtImg.onload = function(){
+            startBtCanvasContext.drawImage(startBtImg, 0, 0, startBtImgWidth, startBtImgHeight);
+        }
+        startBtImg.src = startBtFilePath;
+    }
+
+    function onDrawStartBt(){
+        cacheCanvasContext ? cacheCanvasContext.drawImage(startBtCanvas, startBtImgX, startBtImgY, startBtImgWidth, startBtImgHeight) : '';
+    }
 }
 
 window.onload = onGameInitialization;
