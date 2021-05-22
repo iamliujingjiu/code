@@ -245,7 +245,7 @@ function onGameInitialization(){
                     birdCanvas.width = birdWidth = img.width;
                     birdCanvas.height = birdHeight = img.height;
                     birdCanvasContext.rotate(-0.90);
-                    birdCanvasContext.transform(1, 0, 0, 1, -12, 10);
+                    birdCanvasContext.transform(1, 0, 0, 1, -1 * birdWidth / 2, birdHeight / 2);
                     birdCanvasContext.drawImage(img, 0, 0, birdWidth, birdHeight);
                     birdCanvasList.push(birdCanvas);
                 }
