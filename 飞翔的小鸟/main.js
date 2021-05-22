@@ -11,7 +11,7 @@ function onGameInitialization(){
         pipeUpCanvas, pipeUpCanvasContext,
         titleCanvas, titleCanvasContext,
         startBtCanvas, startBtCanvasContext,
-        bridCanvas, bridCanvasContext ,bridCanvasList = [],
+        birdCanvas, birdCanvasContext ,birdCanvasList = [],
         gameOverImgCanvas, gameOverImgCanvasContext,//game over 图片
         scorePanelImgCanvas, scorePanelImgCanvasContext,//得分板 图片
         getReadyImgCanvas, getReadyImgCanvasContext ,//get ready 图片
@@ -88,7 +88,7 @@ function onGameInitialization(){
             onInitLand();
             setTimeout(function(){
                 onInitPipe();
-                onInitBrid();
+                onInitbird();
                 onInitTitle();
                 onInitStartBt();
 
@@ -211,7 +211,7 @@ function onGameInitialization(){
         pipeDownImg.src = pipeDownFilePath;
     }
 
-    function onInitBrid(){
+    function onInitbird(){
         //鸟的初始化
         birdX = 40;
         birdY = mCanvasHeight / 2;
@@ -233,25 +233,25 @@ function onGameInitialization(){
                 break;    
         }
 
-        bridCanvasList.length = 0;
+        birdCanvasList.length = 0;
         
         for(var index = 0, length = birdFilePathList.length;index < length;index++){
             var birdFilePath = birdFilePathList[index];
             birdImg = new Image();
             void (function(path, img){
                 img.onload = function(){
-                    bridCanvas = document.createElement("canvas");
-                    bridCanvasContext = bridCanvas && bridCanvas.getContext && bridCanvas.getContext('2d');
-                    bridCanvas.width = birdWidth = img.width;
-                    bridCanvas.height = birdHeight = img.height;
-                    bridCanvasContext.drawImage(img, 0, 0, birdWidth, birdHeight);
-                    bridCanvasList.push(bridCanvas);
+                    birdCanvas = document.createElement("canvas");
+                    birdCanvasContext = birdCanvas && birdCanvas.getContext && birdCanvas.getContext('2d');
+                    birdCanvas.width = birdWidth = img.width;
+                    birdCanvas.height = birdHeight = img.height;
+                    birdCanvasContext.rotate(-0.90);
+                    birdCanvasContext.transform(1, 0, 0, 1, -12, 10);
+                    birdCanvasContext.drawImage(img, 0, 0, birdWidth, birdHeight);
+                    birdCanvasList.push(birdCanvas);
                 }
                 img.src = path;
             }(birdFilePath, birdImg))
-            
         }
-
     }
 
     function initScore(){
@@ -301,7 +301,7 @@ function onGameInitialization(){
                 }else{//4
                     if(x >= startBtImgL && x <= startBtImgR && y >= startBtImgT && y <= startBtImgB){
                         onInitPipe();
-                        onInitBrid();
+                        onInitbird();
                         mAnimationFrame ? cancelAnimationFrame(mAnimationFrame) : '';
                         mAnimationFrame = requestAnimationFrame(onDrawGameStart);
                     }
@@ -384,7 +384,7 @@ function onGameInitialization(){
     function onDrawBird(){
         //每隔3次绘制更换一次小鸟的图片
         var index = Math.floor(mTime % 9 / 3);
-        bridCanvasList && bridCanvasList[index] ? cacheCanvasContext.drawImage(bridCanvasList[index], birdX, birdY, birdWidth, birdHeight) : '';
+        birdCanvasList && birdCanvasList[index] ? cacheCanvasContext.drawImage(birdCanvasList[index], birdX, birdY, birdWidth, birdHeight) : '';
     }
 
     function onDrawScore(){
