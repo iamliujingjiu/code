@@ -74,7 +74,7 @@ function onGameInitialization(){
         mRandom,//记录随机数 白天或者黑夜
         mTime = 0,//计时器
         mScore = 0,//计分器
-        
+        mType = 1,//鸟飞翔的角度 1 正常  2 向上  3 向下
 
         mFont, mFillStyle, mTextAlign, mTextBaseline,
 
@@ -236,21 +236,20 @@ function onGameInitialization(){
         birdCanvasList.length = 0;
         
         for(var index = 0, length = birdFilePathList.length;index < length;index++){
-            var birdFilePath = birdFilePathList[index];
+            var birdFilePath = birdFilePathList[index % 3];
+            
             birdImg = new Image();
-            void (function(path, img){
+            void (function(path, img, i){
                 img.onload = function(){
                     birdCanvas = document.createElement("canvas");
                     birdCanvasContext = birdCanvas && birdCanvas.getContext && birdCanvas.getContext('2d');
                     birdCanvas.width = birdWidth = img.width;
                     birdCanvas.height = birdHeight = img.height;
-                    birdCanvasContext.rotate(-0.90);
-                    birdCanvasContext.transform(1, 0, 0, 1, -1 * birdWidth / 2, birdHeight / 2);
                     birdCanvasContext.drawImage(img, 0, 0, birdWidth, birdHeight);
                     birdCanvasList.push(birdCanvas);
                 }
                 img.src = path;
-            }(birdFilePath, birdImg))
+            }(birdFilePath, birdImg, index))
         }
     }
 
