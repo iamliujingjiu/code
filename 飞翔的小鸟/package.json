@@ -1,0 +1,28 @@
+{
+    "name": "bird",
+    "version": "1.0.0",
+    "description": "飞翔的小鸟",
+    "main": "./src/main.js",
+    "dependencies": {
+        "babel-core": "^6.26.3",
+        "babel-loader": "^7.1.5",
+        "copy-webpack-plugin": "^9.0.0",
+        "css-loader": "^5.2.5",
+        "file-loader": "^6.2.0",
+        "html-webpack-plugin": "^5.3.1",
+        "html-loader": "^2.1.2",
+        "style-loader": "^2.0.0",
+        "url-loader": "^4.1.1",
+        "webpack-cli": "^4.7.0",
+        "webpack": "^5.37.1"
+    },
+    "devDependencies": {},
+    "scripts": {
+        "start": "webpack --watch"
+    },
+    "keywords": [
+        "bird"
+    ],
+    "author": "fatman",
+    "license": "ISC"
+}
