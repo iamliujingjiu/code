@@ -1,6 +1,6 @@
 // 入口文件
-'use strict'
-require.context('../style', true, /\.(css)$/i);
+'use strict';
+require('../style/main.css');
 require.context('./assets', true, /\.(png|jpe?g|gif)$/i);
 
 let config = require('./config/config');
@@ -18,8 +18,14 @@ let bgRandom, bridRandom;
 
 let mLandY = 0;
 
-let mSpeedX = -1;
 let mScore = 0;
+let mTime = 0;
+let mSpeedX = -1,//X轴 飞翔的速度
+mSpeedDownY = 1,//Y轴 下落的速度
+mSpeedUpY = -30,////Y轴 上升的速度
+addUpY = 0;//Y轴一次重绘上升的高度
+
+let mAnimationFrame;
 function initData(){
     bgRandom = Math.floor(Math.random() * 2);
     bridRandom = Math.floor(Math.random() * 3);
@@ -62,6 +68,11 @@ function initData(){
     }
     
     
+    for(let index = 0;index < mBirdImgListLength;index++){
+        let birdImg = mBirdImgList[index];
+        birdImg.X = 40;
+        birdImg.Y = bgHeight / 2;
+    }
 }
 
 function initView(){
@@ -99,6 +110,8 @@ function initView(){
 
 
 function onDraw(){
+    mTime += 1;
+
     canvas.onDrawImage(mBgImg.image, 0, 0, mBgImg.width, mBgImg.height);
 
     let pipeImgIntervalHeight = 115;//这个可以改动
@@ -129,11 +142,80 @@ function onDraw(){
         }
         canvas.onDrawImage(mLandImg.image, item.X, item.Y, item.W, item.H);
     }
+    
+    addUpY += mSpeedDownY;
+    for(let index = 0;index < mBirdImgListLength;index++){
+        let birdImg = mBirdImgList[index];
+        birdImg.Y += addUpY;
+        collisionDetection(birdImg);
+    }
+    addUpY = 0;
+
+    let index = Math.floor(mTime % 9 / 3);
+    let birdImg = mBirdImgList && mBirdImgList[index];
+   
+    // canvas.mCacheCanvasContext.translate((birdImg.X + birdImg.width) / 2, (birdImg.Y + birdImg.height) / 2);
+    // canvas.mCacheCanvasContext.rotate(Math.cos(15));
+    // birdImg.image.style.transform = 'rotate(-20deg)';
+    // birdImg.image.style.animation = 'up .6s';
+
+    let birdCanvas = document.createElement('canvas');
+    let birdContext = birdCanvas && birdCanvas.getContext && birdCanvas.getContext('2d');
+    birdCanvas.width = birdImg.width;
+    birdCanvas.height = birdImg.height;
+    birdContext.translate(birdImg.width / 2, birdImg.height / 2);
+    birdContext.rotate(75 * Math.PI / 180);
+    birdContext.translate(- birdImg.width / 2, - birdImg.height / 2);
+ 
+    birdContext.drawImage(birdImg.image, 0, 0, birdImg.width, birdImg.height);
+    birdImg ? canvas.onDrawImage(birdCanvas, birdImg.X, birdImg.Y, birdImg.width, birdImg.height) : '';
+
+
+    // canvas.mCacheCanvasContext.translate(0, 0);
 
     canvas.onCopy();
 
-    window.requestAnimationFrame(onDraw);
+    mAnimationFrame = window.requestAnimationFrame(onDraw);
 }
+
+function onDrawGameOverPage(){
+    setTimeout(() => {
+        mAnimationFrame && window.cancelAnimationFrame(mAnimationFrame);
+    }, 25)
+}
+
+function collisionDetection(birdImg){
+    let birdL = birdImg.X;
+    let birdR = birdImg.X + birdImg.width;
+    let birdT = birdImg.Y;
+    let birdB = birdImg.Y + birdImg.height;
+
+    //触地
+    if(birdB > mLandY){
+        onDrawGameOverPage();
+    }
+    
+    //碰撞检测
+    for(let index = 0, length = mPipeListLength;index < length;index++){
+        let pipeItem = mPipeList[index];
+        if((birdL > pipeItem.X && birdL < pipeItem.X + pipeItem.W)
+            // 右侧撞到柱子
+            || (birdR > pipeItem.X && birdR < pipeItem.X + pipeItem.W)){
+            // 鸟右上方的点撞到上方的柱子
+            if(birdT > 0 && birdT < pipeItem.H + pipeItem.downY){
+                onDrawGameOverPage();
+            // 鸟右下方的点撞到下方的柱子 
+            }else if(birdB > pipeItem.upY && birdB < mLandY){
+                onDrawGameOverPage();
+            }
+        }
+    }
+}
+
+
+window.addEventListener('click', function(){
+    addUpY += mSpeedUpY;
+})
 
 window.onload = function main(){
     initView();

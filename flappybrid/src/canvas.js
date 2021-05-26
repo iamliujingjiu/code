@@ -21,6 +21,12 @@ const canvas = {
         this.mCanvas.height = this.mCacheCanvas.height = this.mHeight = height;
     },
 
+    onRotate : function(angle){
+        this.mCacheCanvasContext.translate(this.mWidth / 2, this.mHeight / 2);
+        this.mCacheCanvasContext.rotate(angle);
+        this.mCacheCanvasContext.translate(0, 0);
+    },
+
     onDrawImage : function(img, x, y, width, height){
         x = Math.ceil(x);
         y = Math.ceil(y);
