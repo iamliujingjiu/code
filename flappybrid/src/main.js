@@ -25,6 +25,7 @@ mSpeedDownY = 1,//Y轴 下落的速度
 mSpeedUpY = -30,////Y轴 上升的速度
 addUpY = 0;//Y轴一次重绘上升的高度
 
+let mBirdAngle = 0;
 let mAnimationFrame;
 function initData(){
     bgRandom = Math.floor(Math.random() * 2);
@@ -144,11 +145,13 @@ function onDraw(){
     }
     
     addUpY += mSpeedDownY;
+    
     for(let index = 0;index < mBirdImgListLength;index++){
         let birdImg = mBirdImgList[index];
         birdImg.Y += addUpY;
         collisionDetection(birdImg);
     }
+    //复原
     addUpY = 0;
 
     let index = Math.floor(mTime % 9 / 3);
@@ -164,7 +167,9 @@ function onDraw(){
     birdCanvas.width = birdImg.width;
     birdCanvas.height = birdImg.height;
     birdContext.translate(birdImg.width / 2, birdImg.height / 2);
-    birdContext.rotate(75 * Math.PI / 180);
+    
+    birdContext.rotate(mBirdAngle * Math.PI / 180);
+    // mBirdAngle !== 90 ? mBirdAngle = 90 : '';  
     birdContext.translate(- birdImg.width / 2, - birdImg.height / 2);
  
     birdContext.drawImage(birdImg.image, 0, 0, birdImg.width, birdImg.height);
@@ -215,6 +220,7 @@ function collisionDetection(birdImg){
 
 window.addEventListener('click', function(){
     addUpY += mSpeedUpY;
+    mBirdAngle = -45;
 })
 
 window.onload = function main(){
