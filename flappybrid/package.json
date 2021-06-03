@@ -3,26 +3,27 @@
     "version": "1.0.0",
     "description": "飞翔的小鸟",
     "main": "./src/main.js",
-    "dependencies": {
-        "babel-core": "^6.26.3",
-        "babel-loader": "^7.1.5",
-        "copy-webpack-plugin": "^9.0.0",
+    "dependencies": {},
+    "devDependencies": {
+        "@babel/core": "^7.14.3",
+        "@babel/plugin-proposal-class-properties": "^7.13.0",
+        "babel-loader": "^8.2.2",
         "css-loader": "^5.2.5",
         "file-loader": "^6.2.0",
         "html-webpack-plugin": "^5.3.1",
-        "html-loader": "^2.1.2",
         "style-loader": "^2.0.0",
         "url-loader": "^4.1.1",
-        "webpack-cli": "^4.7.0",
-        "webpack": "^5.37.1"
+        "webpack": "^5.37.1",
+        "webpack-cli": "^3.3.12",
+        "webpack-dev-server": "^3.11.2"
     },
-    "devDependencies": {},
     "scripts": {
-        "start": "webpack --watch"
+        "start": "webpack-dev-server --config ./config/webpack.config.dev.js",
+        "build": "webpack --config ./config/webpack.config.pro.js"
     },
     "keywords": [
         "bird"
     ],
-    "author": "fatman",
+    "author": "Fatman",
     "license": "ISC"
 }

@@ -3,7 +3,7 @@ const webpack = require('webpack'); //访问内置的插件
 const path = require('path');
 
 module.exports = {
-    mode: 'development',
+    mode: 'production',
     entry: './src/main.js',
     output: {
         filename: 'main.js',
