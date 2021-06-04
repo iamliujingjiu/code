@@ -42,8 +42,19 @@ window.onload = function onload(){
     ripple();
 }
 
+function debounce(fn, wait, context){
+    let timer = null;
+    return function(){
+        timer ? clearTimeout(timer) : '';
+        timer = setTimeout(() => {
+            fn.apply(context, arguments);
+        }, wait)
+    }
+}
 
-window.onresize = function onresize(){
+function onresize(event){
     clientWidth = document.body.clientWidth;
     clientHeight = document.body.clientHeight;
 }
+
+window.addEventListener("resize", debounce(onresize, 200, null));

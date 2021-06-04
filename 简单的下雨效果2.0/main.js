@@ -37,7 +37,19 @@ window.onload = function onload(){
     dorpRain();
 }
 
-window.onresize = function onresize(){
+function debounce(fn, wait, context){
+    let timer = null;
+    return function(){
+        timer ? clearTimeout(timer) : '';
+        timer = setTimeout(() => {
+            fn.apply(context, arguments);
+        }, wait)
+    }
+}
+
+function onresize(event){
     clientWidth = document.body.clientWidth;
     clientHeight = document.body.clientHeight;
 }
+
+window.addEventListener("resize", debounce(onresize, 200, null));
