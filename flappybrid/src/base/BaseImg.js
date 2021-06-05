@@ -1,9 +1,9 @@
 class BaseImg extends Object{
-    #X;
-    #Y;
-    #W;
-    #H;
-    #IMG;
+    #X = 0;
+    #Y = 0;
+    #W = 0;
+    #H = 0;
+    #IMG = 0;
     constructor(imgPath){
         super();
 
@@ -12,7 +12,7 @@ class BaseImg extends Object{
             this.#W = this.#IMG.width;
             this.#H = this.#IMG.height;
         }
-        this.#IMG.onerror = () => {
+        this.#IMG.onerror = (e) => {
             throw Error('img onerror');
         }
         this.#IMG.src = imgPath;

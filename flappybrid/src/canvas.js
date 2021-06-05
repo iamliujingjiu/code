@@ -1,43 +1,48 @@
-//背景
 
+const ID = 'canvas';
 
-const canvas = {
-    mCanvas : null,
-    mCanvasContext : null,
-    mCacheCanvas : null,
-    mCacheCanvasContext : null,
-    mWidth : 0,
-    mHeight : 0,
+let mCanvas, mContext, cacheCanvas, cacheContext;
+let mWidth, mHeight;
+function onInit(width, height){
+    if(width === 0 || typeof width === 'undefined' || width === null){
+        throw Error('width must be greater than 0');
+    }
+    if(height === 0 || typeof height === 'undefined' || height === null){
+        throw Error('height must be greater than 0');
+    }
+    mCanvas = document.getElementById(ID);
+    mContext = mCanvas && mCanvas.getContext && mCanvas.getContext('2d');
+    cacheCanvas = document.createElement('canvas');
+    cacheContext = cacheCanvas && cacheCanvas.getContext && cacheCanvas.getContext('2d');
 
-    onInit : function(id, width, height){
-        console.log('canvas onInit');
-        this.mCanvas = document.getElementById(id);
-        this.mCanvasContext = this.mCanvas && this.mCanvas.getContext && this.mCanvas.getContext('2d');
-        
-        this.mCacheCanvas = document.createElement("canvas");
-        this.mCacheCanvasContext = this.mCacheCanvas && this.mCacheCanvas.getContext && this.mCacheCanvas.getContext('2d');
-
-        this.mCanvas.width = this.mCacheCanvas.width = this.mWidth = width;
-        this.mCanvas.height = this.mCacheCanvas.height = this.mHeight = height;
-    },
-
-    onRotate : function(angle){
-        this.mCacheCanvasContext.translate(this.mWidth / 2, this.mHeight / 2);
-        this.mCacheCanvasContext.rotate(angle);
-        this.mCacheCanvasContext.translate(0, 0);
-    },
-
-    onDrawImage : function(img, x, y, width, height){
-        x = Math.ceil(x);
-        y = Math.ceil(y);
-        width = Math.ceil(width);
-        height = Math.ceil(height);
-        this.mCacheCanvasContext.drawImage(img, x, y, width, height);
-    },
-
-    onCopy : function(){
-        this.mCanvasContext.drawImage(this.mCacheCanvas, 0, 0, this.mWidth, this.mHeight);
-    },
+    mCanvas.width = cacheCanvas.width = mWidth = width;
+    mCanvas.height = cacheCanvas.height = mHeight = height;
 }
 
-module.exports = canvas;
+function drawImage(img, x, y, w, h){
+    if(typeof img === 'undefined' || img === null){
+        throw ReferenceError('img is not defined');
+    }
+
+    x = Math.ceil(x);
+    y = Math.ceil(y);
+    w = Math.ceil(w);
+    h = Math.ceil(h);
+
+    cacheContext.drawImage(img, x, y, w, h);
+}
+
+function copyCache(){
+    mContext.drawImage(cacheCanvas, 0, 0, mWidth, mHeight);
+}
+
+function getContext(){
+    return cacheContext;
+}
+
+module.exports = {
+    onInit : onInit,
+    drawImage : drawImage,
+    copyCache : copyCache,
+    getContext : getContext
+};
