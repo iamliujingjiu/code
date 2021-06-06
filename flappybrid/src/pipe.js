@@ -33,12 +33,13 @@ function onInit(bgWidth, bgHeight, landY){
 }
 
 
-function onMove(addX){
+function onMove(addX, addScoreCallback){
 
     for(let index = 0;index < LENGTH;index++){
         let item = mPipeList[index];
         item.X += addX;
         if(item.X + item.W <= 0){
+            addScoreCallback();
             let x =  LENGTH * BGWIDTH / 2 - PIPEWIDTH;
             let downY =  Math.random() * (PIPEMAXHEIGHT - PIPEMINHEIGHT) + PIPEMINHEIGHT - PIPEHEIGHT;
             let upY = downY + PIPEHEIGHT + PIPEINTERVALHEIGHT;
@@ -61,8 +62,13 @@ function onDraw(context){
     }
 }
 
+function getPipeList(){
+    return mPipeList;
+}
+
 module.exports = {
     onInit : onInit,
     onMove : onMove,
-    onDraw : onDraw
+    onDraw : onDraw,
+    getPipeList : getPipeList
 };

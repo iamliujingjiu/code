@@ -1,15 +1,21 @@
 const BaseImg = require("../base/BaseImg");
 class BirdImg extends BaseImg{
+    #mBirdCacheMap = new Map();
+
     constructor(birdFilePath){
         super(birdFilePath);
     }
 
     /**
      * 
-     * @param {*} angle
+     * @param {*} angle 旋转角度
      * @returns 
      */
     getImg(angle){
+        let _value = this.#mBirdCacheMap.get(angle);
+        if(_value){
+            return _value;
+        }
         if(typeof angle === 'undefined' || angle === null){
             angle = 0;
         }
@@ -25,6 +31,8 @@ class BirdImg extends BaseImg{
         _context.rotate(angle * Math.PI);
         _context.translate(birdWidth / -2, birdHeight / -2);
         _context.drawImage(img, 0, 0, birdWidth, birdHeight);
+
+        this.#mBirdCacheMap.set(angle, _canvas);
         return _canvas;
     }
 }

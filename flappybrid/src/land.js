@@ -31,9 +31,14 @@ function getLandHeight(){
     return landL.getH();
 }
 
+function getLandTop(){
+    return landL.getY();
+}
+
 module.exports = {
     onInit : onInit,
     onMove : onMove,
     onDraw : onDraw,
-    getLandHeight : getLandHeight
+    getLandHeight : getLandHeight,
+    getLandTop : getLandTop
 };

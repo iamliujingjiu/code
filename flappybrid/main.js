@@ -102,7 +102,7 @@ function onGameInitialization(){
                 setTimeout(function(){
                     onDrawGameLaunchPage();
                 },300)
-            }, 100)
+            }, 1000)
             
 
             
@@ -285,7 +285,7 @@ function onGameInitialization(){
             var startBtImgR = startBtImgX + startBtImgWidth;
             var startBtImgT = startBtImgY;
             var startBtImgB = startBtImgY + startBtImgHeight;
-
+            
             if(mStatus === 3){
                 addUpY += speedUpY;
             }else{

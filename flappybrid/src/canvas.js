@@ -40,9 +40,19 @@ function getContext(){
     return cacheContext;
 }
 
+function addEventListener(eventName, fn){
+    mCanvas.addEventListener(eventName, fn)
+}
+
+function removeEventListener(eventName, fn){
+    mCanvas.removeEventListener(eventName, fn)
+}
+
 module.exports = {
     onInit : onInit,
     drawImage : drawImage,
     copyCache : copyCache,
-    getContext : getContext
+    getContext : getContext,
+    addEventListener : addEventListener,
+    removeEventListener : removeEventListener
 };
