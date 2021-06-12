@@ -18,6 +18,7 @@ for(let index = 0; index < LENGTH;index++){
     mBirdList[index] = bird;
 }
 
+
 function onInit(x, y){
     for(let index = 0; index < LENGTH;index++){
         let bird = mBirdList[index];

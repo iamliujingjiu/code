@@ -9,13 +9,29 @@ const mGameStart = require("./page/gameStart");
 const mGameOver = require("./page/gameOver");
 
 window.setTimeout(() => {
-    mGameLaunch.onCreate(() => {
-        mGameReady.onCreate(() => {
-            mGameStart.onCreate(() => {
-                mGameOver.onCreate(() => {
-                    
-                })
-            })
-        })
+    onLauch();
+}, 200)
+
+function onLauch(){
+    return mGameLaunch.onCreate(() => {
+        onReady();
     });
-}, 2000)
+}
+
+function onReady(){
+    return mGameReady.onCreate(() => {
+        onStart();
+    });
+}
+
+function onStart(){
+    return mGameStart.onCreate(() => {
+        onOver();
+    });
+}
+
+function onOver(){
+    return mGameOver.onCreate(() => {
+        onReady();
+    });
+}

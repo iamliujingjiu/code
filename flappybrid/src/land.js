@@ -1,11 +1,10 @@
 const LandImg = require("./bean/LandImg");
-
 let landL = new LandImg();
 let landR = new LandImg();
-
 function onInit(bgHeight){
+    landL.setX(0);
     landL.setY(bgHeight - landL.getH());
-    landR.setX(landR.getW());
+    landR.setX(landL.getW());
     landR.setY(bgHeight - landR.getH());
 }
 

@@ -42,7 +42,7 @@ function onDraw(){
 
     mCanvas.copyCache();
 
-    // mAnimationFrame = window.requestAnimationFrame(onDraw);
+    mAnimationFrame = window.requestAnimationFrame(onDraw);
 }
 
 function onDestory(){

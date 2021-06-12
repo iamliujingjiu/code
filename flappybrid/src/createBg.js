@@ -1,0 +1,1 @@
+const createImg = require("./createImg");

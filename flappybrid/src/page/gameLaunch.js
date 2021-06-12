@@ -53,6 +53,7 @@ function onDestory(){
     if(fn){
         mCanvas.removeEventListener('click', fn);
     }
+
 }
 
 module.exports = {

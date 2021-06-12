@@ -1,9 +1,9 @@
 
 const ID = 'canvas';
-
 let mCanvas, mContext, cacheCanvas, cacheContext;
 let mWidth, mHeight;
 function onInit(width, height){
+
     if(width === 0 || typeof width === 'undefined' || width === null){
         throw Error('width must be greater than 0');
     }
